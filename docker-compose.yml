@@ -1,0 +1,58 @@
+services:
+  postgres:
+    container_name: postgres-db-fastapi
+    image: postgres:13.0-alpine
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+  django:
+    container_name: django-admin
+    restart: "always"
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: "django_app.settings"
+    depends_on:
+      - postgres
+    command: >
+      sh -c "
+      python django_app/manage.py runserver 0.0.0.0:8001
+      "
+    networks:
+      - backend-network
+
+  fastapi:
+    container_name: fastapi-app
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: "django_app.settings"
+    depends_on:
+      - postgres
+    command: uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - backend-network
+
+volumes:
+  pgdata:
+
+networks:
+  backend-network:
+    driver: bridge

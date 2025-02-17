@@ -1,0 +1,17 @@
+.parler-language-tabs {
+    margin-bottom: 20px !important;
+    border: none !important;
+    width: 100% !important;
+}
+
+.parler-language-tabs span.empty {
+    border-radius: 6px !important;
+}
+
+.parler-language-tabs span {
+    border: 1px solid #ccc !important;
+}
+
+.row:has(.parler-language-tabs) {
+    display: inline-flex !important;
+}
